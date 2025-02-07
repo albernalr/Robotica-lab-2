@@ -117,12 +117,94 @@ En este laboratorio, se analizó el manipulador industrial Motoman MH6, compará
    - Exportar el código generado al controlador del Motoman MH6.
    - Ejecutar la trayectoria en el robot físico.
 
-### Código de Ejemplo en RoboDK
+### Código python en RoboDK
 ```python
-# Código generado en RoboDK para una trayectoria polar
-movej([0, 0, 0, 0, 0, 0], a=1.2, v=1.0)
-movel([100, 0, 0], a=1.2, v=1.0)
-movel([100, 100, 0], a=1.2, v=1.0)
+from robodk.robolink import *    # API para comunicarte con RoboDK
+from robodk.robomath import *    # Funciones matemáticas
+import math
+
+#------------------------------------------------
+# 1) Conexión a RoboDK e inicialización
+#------------------------------------------------
+RDK = Robolink()
+
+# Elegir un robot (si hay varios, aparecerá un popup)
+robot = RDK.ItemUserPick("Selecciona un robot", ITEM_TYPE_ROBOT)
+if not robot.Valid():
+    raise Exception("No se ha seleccionado un robot válido.")
+
+#------------------------------------------------
+# 2) Tomar el Frame ya creado en RoboDK
+#    (ejemplo: "Frame_from_Target1")
+#------------------------------------------------
+frame_name = "Frame_from_Target1"
+frame_inclinado = RDK.Item(frame_name, ITEM_TYPE_FRAME)
+if not frame_inclinado.Valid():
+    raise Exception(f'No se encontró el Frame "{frame_name}" en la estación.')
+
+# Configuramos el robot para que use este frame
+robot.setPoseFrame(frame_inclinado)
+# Usamos la herramienta activa (cambia si necesitas otra)
+robot.setPoseTool(robot.PoseTool())
+
+# Ajustes de velocidad y blending
+robot.setSpeed(100)   # mm/s
+robot.setRounding(5)  # radio de curvatura (blend)
+
+#------------------------------------------------
+# 3) Parámetros para la espiral
+#------------------------------------------------
+num_points = 200       # Número de puntos
+turns = 3              # Vueltas de la espiral
+spiral_spread = 1.0    # Crecimiento del radio por radian
+z_surface = 0          # Z=0 en el Frame, considerado la "superficie"
+z_safe = 20            # Altura segura para aproximarse/salir
+
+theta_max = 2 * math.pi * turns
+
+# El centro de la espiral en (x=0, y=0, z=0) relativo al Frame
+first_x = 0
+first_y = 0
+first_z = z_surface
+
+#------------------------------------------------
+# 4) Movimiento inicial al centro en altura segura
+#------------------------------------------------
+robot.MoveJ(transl(first_x, first_y, first_z - z_safe))
+robot.MoveL(transl(first_x, first_y, first_z))
+
+#------------------------------------------------
+# 5) Recorrer la espiral
+#------------------------------------------------
+for i in range(1, num_points + 1):
+    t = i / num_points
+    theta = t * theta_max
+    r = spiral_spread * theta
+    
+    x = r * math.cos(theta)
+    y = r * math.sin(theta)
+    z = z_surface
+    
+    # Movimiento lineal hacia el siguiente punto
+    robot.MoveL(transl(x, y, z))
+
+# Al terminar, subimos para alejarnos de la superficie
+robot.MoveL(transl(x, y, z - z_safe))
+
+print(f"¡Espiral completada usando el frame '{frame_name}'!")
+
+
 ```
+
+### Trayectoria en simulacion
+
+![image](https://github.com/user-attachments/assets/96868782-2a85-4cbb-992a-77e7bf615378)
+
+### Movimiento Robot
+
+
+https://github.com/user-attachments/assets/d1be7a9d-034e-4be4-beae-49e6d0448e86
+
+
 ### Conclusión
 En este laboratorio, se logró comprender las diferencias entre los manipuladores Motoman MH6 y ABB IRB140, se exploraron las configuraciones iniciales del Motoman MH6, y se realizaron movimientos manuales y simulaciones de trayectorias utilizando RoboDK. Además, se compararon las herramientas RoboDK y RobotStudio, destacando sus ventajas y limitaciones.
