@@ -123,3 +123,6 @@ En este laboratorio, se analizó el manipulador industrial Motoman MH6, compará
 movej([0, 0, 0, 0, 0, 0], a=1.2, v=1.0)
 movel([100, 0, 0], a=1.2, v=1.0)
 movel([100, 100, 0], a=1.2, v=1.0)
+```
+### Conclusión
+En este laboratorio, se logró comprender las diferencias entre los manipuladores Motoman MH6 y ABB IRB140, se exploraron las configuraciones iniciales del Motoman MH6, y se realizaron movimientos manuales y simulaciones de trayectorias utilizando RoboDK. Además, se compararon las herramientas RoboDK y RobotStudio, destacando sus ventajas y limitaciones.
