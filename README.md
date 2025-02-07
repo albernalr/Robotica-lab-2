@@ -1,5 +1,7 @@
 # Solución del Laboratorio No. 02 - Robótica Industrial
-
+### Alejandro Bernal Rubiano
+### Jose Alejandro Rosero Rodriguez
+### Guillermo Alejandro Cano Rodriguez
 ## Introducción
 En este laboratorio, se analizó el manipulador industrial Motoman MH6, comparándolo con el ABB IRB140, y se realizaron diversas operaciones manuales y simulaciones utilizando el software RoboDK. A continuación, se presenta la solución paso a paso de cada una de las tareas asignadas.
 
